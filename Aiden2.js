@@ -20,12 +20,18 @@ let aiden = {
 }
 
 // land
-//let landWidth = 800;
-//let landHeight = 100
-//let landX = 0;
-//let landY = boardHeight - landHeight;
-//let landImg;
+const landWidth = 1200;
+const landHeight = 100
+const landX = 0;
+const landY = boardHeight - landHeight;
+let landImg;
 
+const land = {
+    x : landX,
+    y : landY,
+    width : landWidth,
+    height : landHeight
+}
 
 // barriers
 let barrierArray = [];
@@ -36,7 +42,7 @@ let barrier3Width = 150;
 
 let barrierHeight = 170;
 let barrierX = 1100;
-let barrierY = boardHeight - barrierHeight;
+let barrierY = boardHeight - barrierHeight - 100;
 
 let barrier1Img;
 let barrier2Img;
@@ -45,7 +51,7 @@ let barrier3Img;
 //physic
 let velocityX = -6; // barrier moving speed
 let velocityY = 0;
-let gravity = .4;
+let gravity = .3;
 let gameOver = false;
 let score = 0;
 
@@ -76,9 +82,17 @@ window.onload = function() {
     barrier3Img = new Image();
     barrier3Img.src = "sheep.png";
 
+    landImg = new Image();
+    landImg.src = "land.png";
+    landImg.onload = function() {
+        context.drawImage(landImg, land.x, land.y, landWidth, landHeight);
+    }
+
     requestAnimationFrame(update);
-    setInterval(placeBarrier, 1000); //1000milisecunds = 1 secunds
+    setInterval(placeBarrier, 2000); //1000milisecunds = 1 secunds
     document.addEventListener("keydown", moveAiden);
+
+
 }
 
 function update() {
@@ -94,6 +108,9 @@ function update() {
     velocityY += gravity;
     aiden.y = Math.min(aiden.y + velocityY, aidenY); // apply gravity to current aiden.y 
     context.drawImage(aidenImg, aiden.x, aiden.y, aidenWidth, aidenHeight);
+    
+    //land
+    context.drawImage(landImg, land.x, land.y, landWidth, landHeight);
 
     //Barrier
     for (let i = 0; i < barrierArray.length; i++) {
@@ -101,11 +118,11 @@ function update() {
         barrier.x += velocityX
         context.drawImage(barrier.img, barrier.x, barrier.y, barrier.width, barrier.height);
         
-        if (detectCollision(dino,barrier)) {
+        if (detectCollision(aiden,barrier)) {
             gameOver = true
             aidenImg.src = "Aiden-dead.png"
             aidenImg.onload = function () {
-                context.drawImage(aidenImg, aiden.x, aiden.y, aiden.width, aiden,height);
+                context.drawImage(aidenImg, aiden.x, aiden.y, aiden.width, aiden.height);
             }
         }
     
@@ -131,6 +148,10 @@ function moveAiden(e) {
         velocity = +2
     }
 
+}
+
+function placeLand() {
+    
 }
 
 function placeBarrier() {
