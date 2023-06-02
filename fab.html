@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    #popup {
+        background-color: black;
+        width: 1200px;
+        height: 800px;
+        padding: 20px;
+        font-size: 10px;
+        text-align: center;
+        animation-duration: 7.0s;
+        animation-fill-mode: both;
+        animation-delay: 0.5s;
+        animation-timing-function: ease-in-out;
+        opacity: 0;
+    }
+
+    @keyframes slideIn {
+        0% {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideOut {
+        0% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+    }
+
+    #popup2 {
+        background-color: black;
+        width: 1200px;
+        height: 800px;
+        padding: 20px;
+        font-size: 10px;
+        text-align: center;
+        animation-duration: 8.0s;
+        animation-fill-mode: both;
+        display: none;
+    }
+
+    @keyframes slideIn2 {
+        0% {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideOut2 {
+        0% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+    }
+
+    #popup2 img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    #popup h1 {
+        font-size: 52px;
+        color: black;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        margin: 0;
+        padding: 0;
+    }
+
+    #popup2 p {
+        position: absolute;
+        top: 15%;
+        right: 25%;
+        transform: translate(15%, 25%);
+        color: black;
+        font-size: 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        box-sizing: border-box;
+        white-space: pre-line;
+        background: none;
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+
+    <div id="overlay" onclick="hidePopup()">
+        <div id="popup" onclick="event.stopPropagation()">
+            <img src="./papyrus.jpg" alt="papyrus" width="1200" height="800">
+            <h1>Aiden's Adventure</h1>
+        </div>
+        <div id="popup2" onclick="event.stopPropagation()">
+            <img src="./papyrus.jpg" alt="papyrus" width="1200" height="800">
+            <p>Witaj w magicznym królestwie Eldoria, 
+           gdzie ciemność ogarnęła świat od czasu, gdy złowrogi czarodziej Xarath ukradł źródło światła i mocy. 
+           Jesteś bohaterem naszej gry, młodym wojownikiem o imieniu Aiden, 
+           którego przeznaczeniem jest przywrócenie harmonii i pokonanie Xaratha.
+
+            Twoja misja rozpoczyna się w tajemniczej krainie, 
+            gdzie czekają na Ciebie niezwykłe przygody i niebezpieczeństwa. 
+            Będziesz musiał przemierzyć różnorodne lokacje, takie jak ruiny zamków, mistyczne lasy, 
+            wulkany i podwodne jaskinie, w celu osiągnięcia swojego ostatecznego celu.
+
+            Podczas podróży spotkasz postacie towarzyszące, które mogą Ci pomóc w trudnych sytuacjach.
+            Będziesz zdobywał nowe umiejętności i doskonalił swoje zdolności w walce, aby stać się jeszcze potężniejszym wojownikiem.
+
+            Czekają na Ciebie liczne przeszkody, wrogowie i pułapki, które będziesz musiał przezwyciężyć, 
+            wykorzystując swoje umiejętności, refleks i strategiczne myślenie.
+            Tylko dzięki Twojej odwadze i determinacji będziesz w stanie pokonać Xaratha i przywrócić światło i pokój do Eldorii.
+
+            Przygotuj się na niezapomnianą przygodę, gdzie Twoje wybory i działania będą miały wpływ na rozwój fabuły.
+            Czy uda Ci się stawić czoła złowrogiemu Xarathowi i przywrócić światło do Eldorii? 
+            Czas, byś stał się legendarnym bohaterem w świecie magii i przygód. Przygód, które zapamiętają pokolenia.</p>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            showPopup();
+        }
+
+        function showPopup() {
+            var overlay = document.getElementById("overlay");
+            var popup = document.getElementById("popup");
+
+            overlay.style.display = "flex";
+            popup.style.animationName = "slideIn";
+            popup.style.animationDirection = "normal";
+            popup.style.animationFillMode = "both";
+            popup.style.opacity = "1";
+        }
+
+        function hidePopup() {
+            var overlay = document.getElementById("overlay");
+            var popup = document.getElementById("popup");
+            var popup2 = document.getElementById("popup2");
+
+            if (popup.style.display !== "none") {
+                popup.style.animationName = "slideOut";
+                popup.style.animationDirection = "reverse";
+                popup.style.animationFillMode = "both";
+                popup.addEventListener("animationend", function() {
+                    popup.style.display = "none";
+                    popup2.style.display = "block";
+                    popup2.style.animationName = "slideIn2";
+                    popup2.style.animationDirection = "normal";
+                    popup2.style.animationFillMode = "both";
+                });
+            }
+        }
+    </script>
+</body>
+</html>
