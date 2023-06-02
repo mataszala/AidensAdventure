@@ -33,6 +33,24 @@ const land = {
     height : landHeight
 }
 
+
+//monsters
+let monsterArray = [];
+let monsterWidth = 150;
+let monsterHeight = 150;
+let monsterX = boardWidth;
+let monsterY = 330;
+let monsterImg;
+
+
+//clouds
+let cloudsArray = [];
+let cloudsWidth = 348;
+let cloudsHeight = 241;
+let cloudsX = boardWidth;
+let cloudsY = 50;
+let cloudsImg;
+
 // barriers
 let barrierArray = [];
 
@@ -52,6 +70,9 @@ let barrier3Img;
 let velocityX = -6; // barrier moving speed
 let velocityY = 0;
 let gravity = .3;
+let bending = 0;
+let monsterVelocityX = -2; //monster moving left speed;
+
 let gameOver = false;
 let score = 0;
 
@@ -73,6 +94,12 @@ window.onload = function() {
         context.drawImage(aidenImg, aiden.x, aiden.y, aidenWidth, aidenHeight);
     }
 
+    cloudsImg = new Image();
+    cloudsImg.src = "./cloud1.png";
+
+    monsterImg = new Image();
+    monsterImg.src = "./monster.png"
+
     barrier1Img = new Image();
     barrier1Img.src = "rock.png";
 
@@ -90,7 +117,10 @@ window.onload = function() {
 
     requestAnimationFrame(update);
     setInterval(placeBarrier, 2000); //1000milisecunds = 1 secunds
+    setInterval(placeMonsters, 300); //every 6.5 seconds
+    setInterval(placeClouds,800); // every 2 sek
     document.addEventListener("keydown", moveAiden);
+
 
 
 }
@@ -105,19 +135,29 @@ function update() {
     context.clearRect(0, 0, board.width, board.height);
 
     // Aiden
+
     velocityY += gravity;
-    aiden.y = Math.min(aiden.y + velocityY, aidenY); // apply gravity to current aiden.y 
+    aiden.y = Math.min(aiden.y + velocityY, aidenY);// apply gravity to current aiden.y
+    aidenHeight += bending
     context.drawImage(aidenImg, aiden.x, aiden.y, aidenWidth, aidenHeight);
-    
+
+
     //land
     context.drawImage(landImg, land.x, land.y, landWidth, landHeight);
+
+    //clouds
+    for (let i = 0; i < cloudsArray.length; i++) {
+        let clouds = cloudsArray[i];
+        clouds.x += velocityX
+        context.drawImage(clouds.img, clouds.x, clouds.y, clouds.width, clouds.height);
+        }
 
     //Barrier
     for (let i = 0; i < barrierArray.length; i++) {
         let barrier = barrierArray[i];
         barrier.x += velocityX
         context.drawImage(barrier.img, barrier.x, barrier.y, barrier.width, barrier.height);
-        
+
         if (detectCollision(aiden,barrier)) {
             gameOver = true
             aidenImg.src = "Aiden-dead.png"
@@ -125,15 +165,35 @@ function update() {
                 context.drawImage(aidenImg, aiden.x, aiden.y, aiden.width, aiden.height);
             }
         }
-    
     }
+
+
     // score
     context.fillStyle = "black";
     context.font = "40px courier";
     score++;
-    context.fillText(score, 5, 20);
-
+    context.fillText(score, 5, 50);
 }
+
+function placeMonsters() {
+
+
+    let monster = {
+        img : monsterImg,
+        x : monsterX,
+        y : monsterY,
+        width : monsterWidth,
+        height : monsterHeight,
+        passed : false
+    }
+    monsterArray.push(monster);
+
+    if (monsterArray.length > 10) {
+        monsterArray.shift(); // remove the first element from the array
+
+    }
+}
+
 
 function moveAiden(e) {
     if (gameOver) {
@@ -141,20 +201,53 @@ function moveAiden(e) {
     }
     if ((e.code == "Space" || e.code == "ArrowUp" ) && aiden.y == aidenY) {
         // jump
+        aidenImg.src = "Aiden.png";
+        aidenWidth = 200;
+        aidenHeight = 220;
+        aidenX = 50;
+        aidenY = boardHeight - aidenHeight - 100;
         velocityY = -15;
     }
     else if (e.code == "ArrowDown" && aiden.y == aidenY) {
         //duck
-        velocity = +2
+        aidenWidth = 300;
+        aidenHeight = 210;
+        aidenImg.src = "AidenDucking.png";
+        aiden.x = 6;
+        aidenY = boardHeight - aidenHeight - 55;
     }
 
+
 }
+
+function placeClouds() {
+
+    let randomWidth = Math.random() * (cloudsWidth - 150) + 150
+    cloudsHeight = randomWidth - 100
+
+    let clouds = {
+        img : cloudsImg,
+        x : cloudsX,
+        y : cloudsY,
+        width : randomWidth,
+        height : cloudsHeight,
+        passed : false
+    }
+    cloudsArray.push(clouds);
+
+    if (cloudsArray.length > 10) {
+        cloudsArray.shift(); // remove the first element from the array
+
+    }
+}
+
+
 
 function placeLand() {
     
 }
 
-function placeBarrier() {
+function placeBarrier(score) {
     
     if (gameOver) {
        return;
@@ -170,8 +263,25 @@ function placeBarrier() {
 
     }
 
+
+    let monster = {
+        img : monsterImg,
+        x : monsterX,
+        y : monsterY,
+        width : monsterWidth,
+        height : monsterHeight,
+        passed : false
+    }
+
+
+    if (monsterArray.length > 10) {
+        monsterArray.shift(); // remove the first element from the array
+
+    }
+
     let placeBarriersChance = Math.random();
 
+    if(score < 1500){
     if (placeBarriersChance > .90) { // 10% of chance to get barrier3
         barrier.img = barrier3Img;
         barrier.width = barrier3Width;
@@ -192,6 +302,34 @@ function placeBarrier() {
         barrierArray.shift(); // remove the first element from the array
 
     }
+    }else{
+    if (placeBarriersChance > .80) { // 10% of chance to get barrier3
+        barrier.img = barrier3Img;
+        barrier.width = barrier3Width;
+        barrierArray.push(barrier);
+    }
+    else if (placeBarriersChance > .60) { // 30% of chance to get barrier2
+        barrier.img = barrier2Img;
+        barrier.width = barrier2Width;
+        barrierArray.push(barrier);
+    }
+    else if (placeBarriersChance > .40) { // 50% of chance to get barrier1
+        barrier.img = barrier1Img;
+        barrier.width = barrier1Width;
+        barrierArray.push(barrier);
+
+    }
+    else if (placeBarriersChance > .10){
+        barrier.img = monsterImg;
+        barrier.x = monsterX;
+        barrier.y = monsterY;
+        barrier.width = monsterWidth;
+        barrierArray.push(monster);}
+    }
+    }
+
+    if (barrierArray.length > 10) {
+        barrierArray.shift(); // remove the first element from the array}
 }
 
 function detectCollision(a, b) {
